@@ -9,7 +9,6 @@ import yaml
 from lib.jira_deepseek import JiraDeepSeek
 from lib.jira_tools import JiraTools
 from pathlib import Path
-from pprint import pp
 
 parser = argparse.ArgumentParser(description="Runtime parameters",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
