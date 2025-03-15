@@ -1,7 +1,6 @@
 import pandas as pd
 import math
 from jira import JIRA
-from pprint import pp
 from collections import defaultdict
 from datetime import datetime
 from dateutil import parser
