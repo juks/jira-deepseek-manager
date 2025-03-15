@@ -1,13 +1,11 @@
 import logging
 import math
 from http.client import responses
-
 import requests
 from requests.adapters import HTTPAdapter, Retry
 import random
 import re
 import json
-from pprint import pp
 
 class JiraDeepSeek:
     url = 'https://api.deepseek.com/chat/completions'
