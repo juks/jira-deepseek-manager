@@ -1,7 +1,6 @@
 import pandas as pd
 import math
 from jira import JIRA
-from pprint import pp
 from collections import defaultdict
 from datetime import datetime
 from dateutil import parser
@@ -32,9 +31,9 @@ class JiraTools:
             attr_value = getattr(issue.fields, self.all_fields[field_name])
             if type(attr_value) != list:
                 return attr_value
-            elif hasattr(attr_value[0], 'name'):
+            elif len(attr_value) and hasattr(attr_value[0], 'name'):
                 return attr_value[0].name
-            elif hasattr(attr_value[0], 'value'):
+            elif len(attr_value) and hasattr(attr_value[0], 'value'):
                 return attr_value[0].value
             else:
                 return None

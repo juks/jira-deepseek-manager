@@ -10,7 +10,6 @@ import yaml
 from lib.jira_deepseek import JiraDeepSeek
 from lib.jira_tools import JiraTools
 from lib.rules import Rules
-from pprint import pp
 
 parser = argparse.ArgumentParser(description="Runtime parameters",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -46,7 +45,7 @@ else:
 with open(config['jira_query_file']) as stream:
     try:
         queries = yaml.safe_load(stream)
-        jira_query = queries['queries']['released']
+        jira_query = queries['queries']['default']
         if 'custom_fields' in queries:
             custom_fields = queries['custom_fields']
         else:

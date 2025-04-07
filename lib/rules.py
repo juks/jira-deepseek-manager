@@ -1,4 +1,6 @@
 import re
+from types import NoneType
+
 
 class Rules:
     # Получение списка действий для выполняющихся правил
@@ -39,6 +41,7 @@ class Rules:
 
     # Операторы сравнения
     def compare(self, a, b, operator):
+        if type(a) is NoneType and type(b) is not NoneType or type(b) is NoneType and type(a) is not NoneType: return None
         if operator == '<': return a < type(a)(b)
         if operator == '>': return a > type(a)(b)
         if operator == '=': return a == type(a)(b)
