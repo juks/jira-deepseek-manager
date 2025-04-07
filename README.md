@@ -18,17 +18,17 @@
 
 Файлы:
 * _main.py_: основной скрипт.
-* _jira_query_template.txt_: шаблон запроса в Jira. На основе этого файла необходимо сделать свой собственный и переименовать его, например, в jira_query.txt.
+* _jira_query_template.yml_: шаблон запроса в Jira. На основе этого файла необходимо сделать свой собственный и переименовать его, например, в jira_query.yml.
 * _prompts.yml_: набор промптов, используемых при обращении к DeepSeek.
 
 #### 2. Просмотр справки
     pipenv run python main.py -h
 
 #### 3. Выбор задач, скоринг и просмотр мотивирующих комментариев для тех из них, просроченность которых набрала не менее 300 очков:
-    pipenv run python main.py -v -ju=https://my.jira.domain/ -jt=MYJIRATOKEN -dt=MYDEEPSEEKTOKEN --jira_query_file=jira_query.txt --score_limit=300
+    pipenv run python main.py -v -ju=https://my.jira.domain/ -jt=MYJIRATOKEN -dt=MYDEEPSEEKTOKEN --jira_query_file=jira_query.yml --score_limit=300
 
 #### 4. Написание мотивирующих комментариев в просроченных задачах, просроченность которых набрала не менее 300 очков:
-    pipenv run python main.py -v -ju=https://my.jira.domain/ -jt=MYJIRATOKEN -dt=MYDEEPSEEKTOKEN --jira_query_file=jira_query.txt --score_limit=300 --comments_log=comments.log
+    pipenv run python main.py -v -ju=https://my.jira.domain/ -jt=MYJIRATOKEN -dt=MYDEEPSEEKTOKEN --jira_query_file=jira_query.yml --score_limit=300 --comments_log=comments.log
     
 
 
