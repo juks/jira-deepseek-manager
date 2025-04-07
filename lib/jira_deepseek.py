@@ -1,13 +1,10 @@
 import logging
 import math
-from http.client import responses
-
 import requests
 from requests.adapters import HTTPAdapter, Retry
 import random
 import re
 import json
-from pprint import pp
 
 class JiraDeepSeek:
     url = 'https://api.deepseek.com/chat/completions'
@@ -59,22 +56,39 @@ class JiraDeepSeek:
 
                 return json.loads(content)
             else:
-                logging.critical('Request to DeepSeek failed, error code:',  response.status_code)
+                logging.critical('Request to DeepSeek failed: {}'.format(response.status_cod))
 
                 return None
-        except:
-            logging.critical('Request to DeepSeek failed!')
+        except Exception as e:
+            logging.critical('Request to DeepSeek failed! {}'.format(str(e)))
 
             return None
 
-    def extra_prompt(self, issue):
+    def extra_prompt(self, issue, config={}, actions=[]):
         prompt = ''
 
-        if len(issue.source.stats['comments']) > 5:
+        # Основная задача или связанная
+        if issue['intent'] == 'Main':
+            # Спрашивать кратко или длинно?
+            if self.norm_prob(issue['score'], 30, 400, 0.4):
+                prompt += self.prompts['reminder_long']
+            else:
+                prompt += self.prompts['reminder_short']
+        else:
+            prompt += self.prompts['reminder_related'].format(related_id = issue['related_id'])
+
+        prompt += self.prompts['reminder_common']
+
+        # Задача связана с релизом, который уже выпущен
+        if 'released' in actions:
+            prompt += self.prompts['reminder_released']
+
+        # Количество комментариев
+        if len(issue['source'].data['comments']) > 5:
             prompt += self.prompts['comments_data']
 
         # Самое последние событие изменения статуса из интересующих
-        min_change_days = min(issue.source.stats['days_since_last_comment'], issue.source.stats['days_since_last_status'])
+        min_change_days = min(issue['source'].data['days_since_last_comment'], issue['source'].data['days_since_last_status'])
 
         # Слишком давно обновление
         if self.norm_prob(min_change_days, 30, 60, 0.2):
@@ -86,36 +100,34 @@ class JiraDeepSeek:
                     days=min_change_days)
         # Задача создана давно
         else:
-            if self.norm_prob(issue.source.stats['days_since_created'], 20, 100, 0.6):
+            if self.norm_prob(issue['source'].data['days_since_created'], 20, 100, 0.6):
                 prompt += self.prompts['created_months_ago']
 
         # В задаче задействовано много людей
-        if self.norm_prob(issue.source.stats['comments_authors_count'], 5, 10, 0.6):
+        if self.norm_prob(issue['source'].data['comments_authors_count'], 5, 10, 0.6):
             prompt += self.prompts['involves_many'].format(
-                authors=issue.source.stats['comments_authors_count'])
+                authors=issue['source'].data['comments_authors_count'])
+
+        # Статистика связанных задач
+        if issue['source'].stats_linked['closed_perc'] == 100:
+            prompt += self.prompts['linked_closed_all'].format(linked_count = issue['source'].stats_linked['total'])
+        elif issue['source'].stats_linked['closed_perc'] > 70 and issue['source'].stats_linked['total'] > 2:
+            prompt += self.prompts['linked_closed_almost_all'].format(linked_count=issue['source'].stats_linked['total'])
+        elif issue['source'].stats_linked['total'] > 0:
+            prompt += self.prompts['linked_remind']
 
         # У задачи приоритет блокер или крит
-        if issue.source.fields.priority.name in ['Blocker', 'Critical']:
+        if issue['source'].fields.priority.name in ['Blocker', 'Critical']:
             if self.norm_prob(min_change_days, 20, 100, 0.3):
                 prompt += self.prompts['priority_high'].format(
-                    priority=issue.source.fields.priority.name)
+                    priority=issue['source'].fields.priority.name)
 
-        # Ярость из-за выского балла запущенности
+        # Эмоциональность
         if issue['score'] > 300:
-            if self.norm_prob(issue['score'], 20, 400, 0.6):
-                q = self.prompts['personalities'].split(', ')
-                prompt += self.prompts['quote'].format(
-                    who=random.choice(q))
-
-            if issue['score'] > 300:
-                if self.norm_prob(issue['score'], 0, 500, 0.2):
-                    prompt += self.prompts['emotional']
-            if issue['score'] > 500:
-                if self.norm_prob(issue['score'], 0, 600, 0.1):
-                    prompt += self.prompts['highly_emotional']
+            if self.norm_prob(issue['score'], 0, 500, 0.2):
+                prompt += self.prompts['emotional']
 
         return prompt
-
 
     # Нормализация вероятности событий "Да" и "Нет"
     # На основе значения (val), диапазона (min, max) и отрицательного фактора вероятности (bias)

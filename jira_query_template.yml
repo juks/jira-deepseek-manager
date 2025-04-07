@@ -1,0 +1,22 @@
+queries:
+  default:
+    project = SOMEPROJECT AND status IN (New, Open, "In Progress", "Waiting QA") AND priority IN ("Blocker", "Critical") AND createdDate > -180d ORDER BY createdDate ASC
+
+  released:
+    project = SOMEPROJECT AND status IN (New, Open, "In Progress", "Waiting QA") AND priority IN ("Blocker", "Critical") AND fixVersion = 3.0 createdDate > -180d ORDER BY createdDate ASC
+
+custom_fields:
+  - Product
+  - Fix Version/s
+
+rules:
+  skip:
+    conditions:
+      - fields.status.name=Linked
+      - stats_linked.closed_perc<100
+      - data.days_since_last_status<50
+
+  released:
+    conditions:
+      - data.custom_fields.Product=Corp-Mail
+      - data.custom_fields.Fix Version/s=3.0

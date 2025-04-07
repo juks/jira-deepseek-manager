@@ -2,5 +2,4 @@
 __pycache__
 venv
 comments.log
-jira_query.txt
-
+jira_query.yml

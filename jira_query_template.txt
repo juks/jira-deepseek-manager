@@ -1,1 +1,0 @@
-project = SOMEPROJECT AND status IN (New, Open, "In Progress", "Waiting QA") AND priority IN ("Blocker", "Critical") AND createdDate > -180d ORDER BY createdDate ASC

@@ -1,0 +1,1 @@
+project = ST AND Product = Corp-Mail AND status IN (New, Open, "In Progress", "Waiting QA", "Waiting RND", "Waiting Support", "Waiting SRE") AND priority IN ("Major", "Critical") AND createdDate > -300d ORDER BY createdDate ASC
