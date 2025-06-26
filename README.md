@@ -1,7 +1,7 @@
 # Что это такое?
 Автоматический менеджер проектов, реализованный на Python с ипользованием функционала [DeepSeek](https://www.deepseek.com/). Эффективно помогает командам закрывать задачи в Jira, оставляя ценные менеджерские напутствия в них.
 
-<img src="https://github.com/user-attachments/assets/a4d9771d-1ff4-4650-b0dd-c24f8256b26b" width="800">
+<img src="https://github.com/user-attachments/assets/292ef921-b8a7-4909-939c-1e0df91eed38" width="800">
 
 #### Возможности
 * Выборка и скоринг степени запущенности тикетов из Jira по заданному запросу.
